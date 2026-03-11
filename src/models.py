@@ -84,12 +84,13 @@ class Bill(BaseModel):
 
 
 class ApartmentSettlement(BaseModel):
+    key: str
     apartment: str
     month: int
     year: int
-    total_rent_pln: float
-    total_bills_pln: float
     total_due_pln: float
+    total_transfers_pln: float = 0.0
+    balance_pln: float = 0.0
 
 
 class TenantSettlement(BaseModel):
@@ -97,7 +98,6 @@ class TenantSettlement(BaseModel):
     apartment_settlement: str
     month: int
     year: int
-    rent_pln: float
-    bills_pln: float
     total_due_pln: float
-    balance_pln: float
+    total_transfers_pln: float = 0.0
+    balance_pln: float = 0.0
