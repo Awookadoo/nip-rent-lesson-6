@@ -69,6 +69,61 @@ class Manager:
                 year=apartment_settlement.year,
                 total_due_pln=apartment_settlement.total_due_pln / len(tenants_in_apartment)
             )
-        for tenant in tenants_in_apartment ] 
+        for tenant in tenants_in_apartment ]
+
+    def get_debtors(self, apartment_key: str, month: int, year: int) -> List[str]:
+        """
+        Zwraca listę lokatorów, których suma przelewów w danym miesiącu jest mniejsza niż ich czynsz.
+        """
+        if month < 1 or month > 12:
+            raise ValueError("Month must be between 1 and 12")
+        if apartment_key not in self.apartments:
+            return []
+        
+        debtors = []
+        tenants_in_apartment = [tenant for tenant in self.tenants.values() if tenant.apartment == apartment_key]
+        
+        for tenant in tenants_in_apartment:
+            # Znajdź klucz tenanta (np. "tenant-1")
+            tenant_key = None
+            for key, t in self.tenants.items():
+                if t == tenant:
+                    tenant_key = key
+                    break
+            
+            if tenant_key is None:
+                continue
+            
+            # Suma przelewów dla tego lokatora w danym miesiącu/roku
+            total_transfers = sum(
+                transfer.amount_pln for transfer in self.transfers
+                if transfer.tenant == tenant_key and 
+                   transfer.settlement_year == year and 
+                   transfer.settlement_month == month
+            )
+            
+            # Jeśli suma przelewów < czynsz, to dłużnik
+            if total_transfers < tenant.rent_pln:
+                debtors.append(tenant.name)
+        
+        return debtors
+
+    def get_tax(self, year: int, month: int, tax_rate: float) -> float:
+        """
+        Zwraca sumę przychodów wymnożoną przez stawkę podatku i zaokrągloną do pełnych złotych.
+        Każdy przelew jest opodatkowany.
+        """
+        if month < 1 or month > 12:
+            raise ValueError("Month must be between 1 and 12")
+        
+        # Suma wszystkich przelewów w danym miesiącu/roku
+        total_income = sum(
+            transfer.amount_pln for transfer in self.transfers
+            if transfer.settlement_year == year and transfer.settlement_month == month
+        )
+        
+        # Oblicz podatek i zaokrąglij do pełnych złotych
+        tax_amount = total_income * tax_rate
+        return round(tax_amount) 
     
     
