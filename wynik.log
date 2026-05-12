@@ -1,0 +1,58 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.2, pytest-9.0.3, pluggy-1.6.0 -- c:\Users\Student\Documents\KK Zajêcia\KK Zajêcia G6\nip-rent-lesson-6\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Student\Documents\KK Zajêcia\KK Zajêcia G6\nip-rent-lesson-6
+collecting ... collected 14 items
+
+tests/test_complex_integration.py::test_apartment_costs PASSED           [  7%]
+tests/test_complex_integration.py::test_apartment_costs_with_optional_parameters PASSED [ 14%]
+tests/test_complex_integration.py::test_settlement_creation PASSED       [ 21%]
+tests/test_complex_integration.py::test_tenants_settlements_creation PASSED [ 28%]
+tests/test_functional.py::test_tenant_settlements_sum_equals_apartment_settlement PASSED [ 35%]
+tests/test_functional.py::test_get_debtors FAILED                        [ 42%]
+tests/test_functional.py::test_get_tax FAILED                            [ 50%]
+tests/test_integration.py::test_load_data PASSED                         [ 57%]
+tests/test_integration.py::test_tenants_in_manager PASSED                [ 64%]
+tests/test_integration.py::test_if_tenants_have_valid_apartment_keys PASSED [ 71%]
+tests/test_unit.py::test_apartment_fields PASSED                         [ 78%]
+tests/test_unit.py::test_apartment_from_dict PASSED                      [ 85%]
+tests/test_unit.py::test_tenant_fields PASSED                            [ 92%]
+tests/test_unit.py::test_tenant_from_dict PASSED                         [100%]
+
+================================== FAILURES ===================================
+______________________________ test_get_debtors _______________________________
+
+    def test_get_debtors():
+    
+        parameters = Parameters()
+        manager = Manager(parameters)
+    
+        apartment_key = "apart-polanka"
+        year = 2025
+        month = 1
+    
+>       debtors = manager.get_debtors(apartment_key, month, year)
+                  ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Manager' object has no attribute 'get_debtors'
+
+tests\test_functional.py:42: AttributeError
+________________________________ test_get_tax _________________________________
+
+    def test_get_tax():
+    
+        parameters = Parameters()
+        manager = Manager(parameters)
+    
+        year = 2025
+        month = 1
+        tax_rate = 0.085
+    
+>       tax_amount = manager.get_tax(year, month, tax_rate)
+                     ^^^^^^^^^^^^^^^
+E       AttributeError: 'Manager' object has no attribute 'get_tax'
+
+tests\test_functional.py:57: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_functional.py::test_get_debtors - AttributeError: 'Manager'...
+FAILED tests/test_functional.py::test_get_tax - AttributeError: 'Manager' obj...
+======================== 2 failed, 12 passed in 0.36s =========================

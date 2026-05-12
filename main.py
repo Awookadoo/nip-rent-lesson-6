@@ -1,6 +1,6 @@
 from src.manager import Manager
 from src.models import Parameters
-
+import sys
 
 def print_section_header(title: str):
     """Print a formatted section header"""
@@ -63,11 +63,46 @@ def display_tenants(manager):
                 print(f"      • {format_currency(transfer.amount_pln):>15}  Date: {transfer.date}  Period: {month_year}")
 
 
-if __name__ == '__main__':
-    parameters = Parameters()
-    manager = Manager(parameters)
-
-    display_apartments(manager)
-    display_tenants(manager)
+def display_apartment_settlement(manager, apartment_key: str, year: int, month: int):
+    """Display settlement for a specific apartment and period"""
+    print_section_header(f"APARTMENT SETTLEMENT: {apartment_key} - {month}/{year}")
     
-    print(f"\n{'=' * 70}\n")
+    apartment_settlement = manager.get_settlement(apartment_key, year, month)
+    if not apartment_settlement:
+        print(f"No settlement found for apartment '{apartment_key}' in {month}/{year}")
+        return
+    
+    print(f"\n{manager.apartments[apartment_key].name} ({apartment_key})")
+    print(f"   Period: {month}/{year}")
+    print(f"   Total Due: {format_currency(apartment_settlement.total_due_pln)}")
+    
+    tenants_settlements = manager.create_tenants_settlements(apartment_settlement)
+    if tenants_settlements:
+        print_subsection_header("Tenants Settlements")
+        for settlement in tenants_settlements:
+            print(f"      - {settlement.tenant:<20} {format_currency(settlement.total_due_pln):>15}")
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print("Usage: python main.py <apartment_key> <year> <month>")
+        print("Example: python main.py apart-polanka 2024 1")
+        sys.exit(1)
+    
+    try:
+        apartment_key = sys.argv[1]
+        year = int(sys.argv[2])
+        month = int(sys.argv[3])
+        
+        if month < 1 or month > 12:
+            raise ValueError("Month must be between 1 and 12")
+        
+        parameters = Parameters()
+        manager = Manager(parameters)
+        
+        display_apartment_settlement(manager, apartment_key, year, month)
+        
+        print(f"\n{'=' * 70}\n")
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
